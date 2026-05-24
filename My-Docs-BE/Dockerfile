@@ -1,5 +1,5 @@
 # 1단계: 빌드 스테이지
-FROM gradle:9-jdk21 AS build
+FROM gradle:8.12-jdk21 AS build
 WORKDIR /app
 
 # 그래들 설정 파일 복사
