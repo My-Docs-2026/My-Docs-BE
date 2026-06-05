@@ -1,0 +1,11 @@
+spring:
+  profiles:
+    active: local  # 기본값, 서버 배포 시 prod로 교체
+  jpa:
+    hibernate:
+      ddl-auto: validate  # 스키마는 Neon에서 직접 만들었으니까
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+        dialect: org.hibernate.dialect.PostgreSQLDialect
