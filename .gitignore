@@ -39,6 +39,6 @@ out/
 ### Kotlin ###
 .kotlin
 
-
-### DB ###
+### Local config / secrets ###
 src/main/resources/application-local.yml
+.env
