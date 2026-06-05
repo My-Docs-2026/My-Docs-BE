@@ -40,5 +40,5 @@ out/
 .kotlin
 
 ### Local config / secrets ###
-src/main/resources/application-local.yml
+src/main/resources/application_local.yml
 .env
