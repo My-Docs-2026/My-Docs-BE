@@ -1,4 +1,4 @@
-package com.example.mydocsbe.security
+package com.example.mydocsbe.auth
 
 import io.jsonwebtoken.Claims
 import io.jsonwebtoken.JwtException

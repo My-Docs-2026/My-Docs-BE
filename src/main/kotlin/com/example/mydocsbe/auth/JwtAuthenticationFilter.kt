@@ -1,4 +1,4 @@
-package com.example.mydocsbe.security
+package com.example.mydocsbe.auth
 
 import jakarta.servlet.FilterChain
 import jakarta.servlet.http.HttpServletRequest
