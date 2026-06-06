@@ -2,7 +2,6 @@ package com.example.mydocsbe.config
 
 import com.example.mydocsbe.auth.CustomUserDetailsService
 import com.example.mydocsbe.auth.JwtAuthenticationFilter
-import com.example.mydocsbe.auth.OAuth2SuccessHandler
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.security.authentication.AuthenticationManager
@@ -19,7 +18,6 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @EnableWebSecurity
 class SecurityConfig(
     private val jwtAuthenticationFilter: JwtAuthenticationFilter,
-    private val oAuth2SuccessHandler: OAuth2SuccessHandler,
     private val customUserDetailsService: CustomUserDetailsService,
 ) {
 
@@ -30,7 +28,6 @@ class SecurityConfig(
             .sessionManagement { it.sessionCreationPolicy(SessionCreationPolicy.STATELESS) }
             .authorizeHttpRequests { it.anyRequest().permitAll() } // TODO: 인증 적용 시 교체
             .userDetailsService(customUserDetailsService)
-            .oauth2Login { it.successHandler(oAuth2SuccessHandler) }
             .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter::class.java)
 
         return http.build()
