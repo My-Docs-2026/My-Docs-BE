@@ -1,6 +1,8 @@
 spring:
   profiles:
     active: local  # 기본값, 서버 배포 시 prod로 교체
+  autoconfigure:
+    exclude: org.springframework.boot.autoconfigure.security.oauth2.client.OAuth2ClientAutoConfiguration
   jpa:
     hibernate:
       ddl-auto: validate  # 스키마는 Neon에서 직접 만들었으니까
@@ -9,3 +11,7 @@ spring:
       hibernate:
         format_sql: true
         dialect: org.hibernate.dialect.PostgreSQLDialect
+
+jwt:
+  secret: ${JWT_SECRET:7U9wb1goX0f24PVR7eid394FGk0v+VHlqUFP8ydJwrM=}
+  expiration: 86400000  # 24시간 (ms)
