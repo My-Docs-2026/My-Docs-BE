@@ -42,3 +42,6 @@ out/
 ### Local config / secrets ###
 src/main/resources/application_local.yml
 .env
+
+### Claude Code ###
+CLAUDE.md
