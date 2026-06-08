@@ -26,7 +26,14 @@ class SecurityConfig(
         http
             .csrf { it.disable() }
             .sessionManagement { it.sessionCreationPolicy(SessionCreationPolicy.STATELESS) }
-            .authorizeHttpRequests { it.anyRequest().permitAll() } // TODO: 인증 적용 시 교체
+            .authorizeHttpRequests {
+                it.requestMatchers(
+                    "/swagger-ui/**",
+                    "/swagger-ui.html",
+                    "/v3/api-docs/**",
+                ).permitAll()
+                it.anyRequest().permitAll() // TODO: 인증 적용 시 교체
+            }
             .userDetailsService(customUserDetailsService)
             .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter::class.java)
 
