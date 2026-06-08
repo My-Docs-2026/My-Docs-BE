@@ -1,6 +1,8 @@
 package com.example.mydocsbe.auth
 
-import com.example.mydocsbe.auth.dto.LoginRequest
+import com.example.mydocsbe.auth.dto.request.LoginRequest
+import com.example.mydocsbe.auth.service.AuthService
+import com.example.mydocsbe.auth.service.JwtTokenProvider
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.mockito.kotlin.any

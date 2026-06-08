@@ -1,6 +1,6 @@
-package com.example.mydocsbe.auth
+package com.example.mydocsbe.auth.service
 
-import com.example.mydocsbe.domain.user.UserRepository
+import com.example.mydocsbe.user.repository.UserRepository
 import org.springframework.security.core.userdetails.User
 import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.security.core.userdetails.UserDetailsService
