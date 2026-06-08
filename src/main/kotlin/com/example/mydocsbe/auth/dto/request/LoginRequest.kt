@@ -1,4 +1,4 @@
-package com.example.mydocsbe.auth.dto
+package com.example.mydocsbe.auth.dto.request
 
 data class LoginRequest(
     val email: String,

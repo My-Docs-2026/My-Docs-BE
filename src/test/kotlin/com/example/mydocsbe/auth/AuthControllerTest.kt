@@ -1,14 +1,16 @@
 package com.example.mydocsbe.auth
 
-import com.example.mydocsbe.auth.dto.LoginRequest
-import com.example.mydocsbe.auth.dto.TokenResponse
+import com.example.mydocsbe.auth.controller.AuthController
+import com.example.mydocsbe.auth.dto.request.LoginRequest
+import com.example.mydocsbe.auth.dto.response.TokenResponse
+import com.example.mydocsbe.auth.service.AuthService
 import org.junit.jupiter.api.Test
 import org.mockito.BDDMockito.given
 import org.mockito.BDDMockito.willThrow
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration
-import org.springframework.boot.autoconfigure.security.servlet.SecurityFilterAutoConfiguration
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
+import org.springframework.boot.security.autoconfigure.SecurityAutoConfiguration
+import org.springframework.boot.security.autoconfigure.web.servlet.SecurityFilterAutoConfiguration
+import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest
 import org.springframework.http.MediaType
 import org.springframework.security.authentication.BadCredentialsException
 import org.springframework.test.context.bean.override.mockito.MockitoBean

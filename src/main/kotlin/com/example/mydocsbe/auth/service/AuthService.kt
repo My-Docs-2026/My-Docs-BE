@@ -1,7 +1,7 @@
-package com.example.mydocsbe.auth
+package com.example.mydocsbe.auth.service
 
-import com.example.mydocsbe.auth.dto.LoginRequest
-import com.example.mydocsbe.auth.dto.TokenResponse
+import com.example.mydocsbe.auth.dto.request.LoginRequest
+import com.example.mydocsbe.auth.dto.response.TokenResponse
 import org.springframework.security.authentication.AuthenticationManager
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.stereotype.Service

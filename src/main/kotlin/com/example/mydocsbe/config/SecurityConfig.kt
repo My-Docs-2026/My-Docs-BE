@@ -1,7 +1,7 @@
 package com.example.mydocsbe.config
 
-import com.example.mydocsbe.auth.CustomUserDetailsService
-import com.example.mydocsbe.auth.JwtAuthenticationFilter
+import com.example.mydocsbe.auth.service.CustomUserDetailsService
+import com.example.mydocsbe.auth.service.JwtAuthenticationFilter
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.security.authentication.AuthenticationManager

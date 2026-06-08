@@ -1,7 +1,8 @@
-package com.example.mydocsbe.auth
+package com.example.mydocsbe.auth.controller
 
-import com.example.mydocsbe.auth.dto.LoginRequest
-import com.example.mydocsbe.auth.dto.TokenResponse
+import com.example.mydocsbe.auth.dto.request.LoginRequest
+import com.example.mydocsbe.auth.dto.response.TokenResponse
+import com.example.mydocsbe.auth.service.AuthService
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
