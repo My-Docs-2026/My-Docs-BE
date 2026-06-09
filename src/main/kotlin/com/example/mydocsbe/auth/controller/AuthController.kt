@@ -13,8 +13,8 @@ import org.springframework.web.bind.annotation.RestController
 class AuthController(
     private val authService: AuthService,
 ) {
-
     @PostMapping("/login")
-    fun login(@RequestBody request: LoginRequest): TokenResponse =
-        authService.login(request)
+    fun login(
+        @RequestBody request: LoginRequest,
+    ): TokenResponse = authService.login(request)
 }
