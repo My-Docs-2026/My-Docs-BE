@@ -24,7 +24,6 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
     excludeAutoConfiguration = [SecurityAutoConfiguration::class, SecurityFilterAutoConfiguration::class],
 )
 class AuthControllerTest {
-
     @Autowired
     private lateinit var mockMvc: MockMvc
 
@@ -36,25 +35,26 @@ class AuthControllerTest {
         given(authService.login(LoginRequest("test@test.com", "1111")))
             .willReturn(TokenResponse("jwt-token"))
 
-        mockMvc.perform(
-            post("/api/auth/login")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content("""{"email":"test@test.com","password":"1111"}"""),
-        )
-            .andExpect(status().isOk)
+        mockMvc
+            .perform(
+                post("/api/auth/login")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content("""{"email":"test@test.com","password":"1111"}"""),
+            ).andExpect(status().isOk)
             .andExpect(jsonPath("$.accessToken").value("jwt-token"))
     }
 
     @Test
     fun `잘못된 패스워드로 로그인 시 401 반환`() {
         willThrow(BadCredentialsException("Invalid credentials"))
-            .given(authService).login(LoginRequest("test@test.com", "wrong"))
+            .given(authService)
+            .login(LoginRequest("test@test.com", "wrong"))
 
-        mockMvc.perform(
-            post("/api/auth/login")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content("""{"email":"test@test.com","password":"wrong"}"""),
-        )
-            .andExpect(status().isUnauthorized)
+        mockMvc
+            .perform(
+                post("/api/auth/login")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content("""{"email":"test@test.com","password":"wrong"}"""),
+            ).andExpect(status().isUnauthorized)
     }
 }

@@ -18,8 +18,12 @@ class JwtTokenProvider(
         Keys.hmacShaKeyFor(Decoders.BASE64.decode(secretKey))
     }
 
-    fun generateToken(email: String, provider: String): String =
-        Jwts.builder()
+    fun generateToken(
+        email: String,
+        provider: String,
+    ): String =
+        Jwts
+            .builder()
             .subject(email)
             .claim("provider", provider)
             .issuedAt(Date())
@@ -27,14 +31,13 @@ class JwtTokenProvider(
             .signWith(key)
             .compact()
 
-    fun validateToken(token: String): Boolean =
-        runCatching { parseClaims(token) }.isSuccess
+    fun validateToken(token: String): Boolean = runCatching { parseClaims(token) }.isSuccess
 
-    fun getEmail(token: String): String =
-        parseClaims(token).subject
+    fun getEmail(token: String): String = parseClaims(token).subject
 
     private fun parseClaims(token: String): Claims =
-        Jwts.parser()
+        Jwts
+            .parser()
             .verifyWith(key)
             .build()
             .parseSignedClaims(token)
