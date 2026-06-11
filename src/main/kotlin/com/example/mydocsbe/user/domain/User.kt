@@ -4,6 +4,7 @@ import jakarta.persistence.Column
 import jakarta.persistence.Entity
 import jakarta.persistence.Id
 import jakarta.persistence.Table
+import java.time.Instant
 
 @Entity
 @Table(name = "users")
@@ -18,4 +19,6 @@ class User(
     val password: String,
     @Column(name = "email_verified", nullable = false)
     var emailVerified: Boolean = false,
+    @Column(name = "created_at", nullable = false)
+    val createdAt: Instant = Instant.now(),
 )
