@@ -1,5 +1,7 @@
 package com.example.mydocsbe.docs.domain
 
+import com.example.mydocsbe.docs.domain.enum.DocumentStatus
+import com.example.mydocsbe.docs.domain.enum.DocumentType
 import jakarta.persistence.*
 import java.time.Instant
 
