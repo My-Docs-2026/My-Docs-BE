@@ -26,3 +26,11 @@ spring:
 jwt:
   secret: ${JWT_SECRET:7U9wb1goX0f24PVR7eid394FGk0v+VHlqUFP8ydJwrM=}
   expiration: 86400000  # 24시간 (ms)
+
+cloudflare:
+  r2:
+    account-id: ${R2_ACCOUNT_ID}
+    access-key-id: ${R2_ACCESS_KEY_ID}
+    secret-access-key: ${R2_SECRET_ACCESS_KEY}
+    bucket: ${R2_BUCKET}
+    public-url: ${R2_PUBLIC_URL}
