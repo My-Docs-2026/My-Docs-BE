@@ -9,8 +9,9 @@ import java.time.Instant
 @Table(name = "document")
 class Docs(
     @Id
+    @Column(columnDefinition = "uuid")
     val id: String,
-    @Column(name = "user_id", nullable = false)
+    @Column(name = "user_id", nullable = false, columnDefinition = "uuid")
     val userId: String,
     @Column(nullable = false)
     val title: String,

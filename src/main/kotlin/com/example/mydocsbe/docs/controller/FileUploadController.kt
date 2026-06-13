@@ -10,11 +10,11 @@ import org.springframework.web.bind.annotation.RestController
 import org.springframework.web.multipart.MultipartFile
 
 @RestController
-@RequestMapping("/api/docs")
+@RequestMapping("/api/v1/docs")
 class FileUploadController(
     private val fileUploadService: FileUploadService,
 ) {
-    @PostMapping("/upload", consumes = [MediaType.MULTIPART_FORM_DATA_VALUE])
+    @PostMapping("/file", consumes = [MediaType.MULTIPART_FORM_DATA_VALUE])
     fun upload(
         @RequestPart file: MultipartFile,
     ): FileUploadResponse = fileUploadService.upload(file)
