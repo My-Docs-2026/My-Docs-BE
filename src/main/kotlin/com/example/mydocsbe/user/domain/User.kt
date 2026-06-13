@@ -10,6 +10,7 @@ import java.time.Instant
 @Table(name = "users")
 class User(
     @Id
+    @Column(columnDefinition = "uuid")
     val id: String,
 
     @Column(nullable = false, unique = true)
