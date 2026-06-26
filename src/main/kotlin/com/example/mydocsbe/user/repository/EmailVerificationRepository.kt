@@ -11,5 +11,10 @@ interface EmailVerificationRepository : JpaRepository<EmailVerification, String>
 
     fun findByEmail(email: String): EmailVerification?
 
+    fun findByEmailAndVerified(
+        email: String,
+        verified: Boolean,
+    ): EmailVerification?
+
     fun deleteByEmail(email: String)
 }

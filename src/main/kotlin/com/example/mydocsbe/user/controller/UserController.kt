@@ -1,6 +1,7 @@
 package com.example.mydocsbe.user.controller
 
 import com.example.mydocsbe.user.dto.request.RegisterRequest
+import com.example.mydocsbe.user.dto.request.SignUpRequest
 import com.example.mydocsbe.user.dto.request.VerifyEmailRequest
 import com.example.mydocsbe.user.dto.response.MessageResponse
 import com.example.mydocsbe.user.service.UserService
@@ -27,5 +28,14 @@ class UserController(
     ): MessageResponse {
         userService.verifyEmail(request)
         return MessageResponse("이메일 인증이 완료되었습니다.")
+    }
+
+    @PostMapping("/signup")
+    @ResponseStatus(HttpStatus.CREATED)
+    fun signUp(
+        @RequestBody request: SignUpRequest,
+    ): MessageResponse {
+        userService.signUp(request)
+        return MessageResponse("회원가입이 완료되었습니다.")
     }
 }

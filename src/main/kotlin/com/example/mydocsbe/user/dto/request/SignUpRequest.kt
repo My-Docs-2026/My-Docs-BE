@@ -1,6 +1,6 @@
 package com.example.mydocsbe.user.dto.request
 
-class SignUpRequest(
+data class SignUpRequest(
     val email: String,
     val password: String,
 )
