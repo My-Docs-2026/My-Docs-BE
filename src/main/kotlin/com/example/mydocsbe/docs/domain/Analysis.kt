@@ -19,7 +19,7 @@ class Analysis(
     @Column(name = "pros_summary", nullable = false, columnDefinition = "TEXT")
     val prosSummary: String,
     @JdbcTypeCode(SqlTypes.JSON)
-    @Column(name = "analysis_detail", nullable = false, columnDefinition = "jsonb")
+    @Column(name = "analysis_datail", nullable = false, columnDefinition = "jsonb")
     val analysisDetail: String,
     @Column(name = "created_at", nullable = false)
     val createdAt: Instant = Instant.now(),
