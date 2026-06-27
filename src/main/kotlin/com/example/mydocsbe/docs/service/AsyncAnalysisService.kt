@@ -8,6 +8,7 @@ import com.example.mydocsbe.docs.repository.UploadDocsRepository
 import org.springframework.scheduling.annotation.Async
 import org.springframework.stereotype.Service
 import tools.jackson.databind.ObjectMapper
+import java.util.UUID
 
 @Service
 class AsyncAnalysisService(
@@ -17,7 +18,7 @@ class AsyncAnalysisService(
     private val objectMapper: ObjectMapper,
 ) {
     @Async
-    fun analyzeAndStore(docId: String, request: AnalyzeDocsRequest) {
+    fun analyzeAndStore(docId: UUID, request: AnalyzeDocsRequest) {
         val doc = uploadDocsRepository.findById(docId).orElse(null) ?: return
         doc.status = DocumentStatus.ANALYZING
         uploadDocsRepository.save(doc)

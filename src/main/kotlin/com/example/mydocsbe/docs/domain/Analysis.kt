@@ -7,13 +7,13 @@ import jakarta.persistence.Table
 import org.hibernate.annotations.JdbcTypeCode
 import org.hibernate.type.SqlTypes
 import java.time.Instant
+import java.util.UUID
 
 @Entity
 @Table(name = "analysis")
 class Analysis(
     @Id
-    @Column(columnDefinition = "uuid")
-    val id: String,
+    val id: UUID,
     @Column(nullable = false, columnDefinition = "TEXT")
     val summary: String,
     @Column(name = "pros_summary", nullable = false, columnDefinition = "TEXT")
