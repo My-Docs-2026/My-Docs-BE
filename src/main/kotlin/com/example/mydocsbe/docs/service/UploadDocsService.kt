@@ -5,10 +5,12 @@ import com.example.mydocsbe.docs.domain.enum.DocumentStatus
 import com.example.mydocsbe.docs.domain.enum.DocumentType
 import com.example.mydocsbe.docs.dto.request.AnalyzeDocsRequest
 import com.example.mydocsbe.docs.dto.request.UploadDocsRequest
+import com.example.mydocsbe.docs.dto.response.AnalysisDetailItem
 import com.example.mydocsbe.docs.dto.response.AnalysisResult
 import com.example.mydocsbe.docs.dto.response.AnalyzeDocsResponse
 import com.example.mydocsbe.docs.dto.response.DocsStatusResponse
 import com.example.mydocsbe.docs.dto.response.UploadDocsResponse
+import com.example.mydocsbe.docs.repository.AnalysisRepository
 import com.example.mydocsbe.docs.repository.UploadDocsRepository
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.stereotype.Service
@@ -20,6 +22,7 @@ import java.util.UUID
 @Service
 class UploadDocsService(
     private val uploadDocsRepository: UploadDocsRepository,
+    private val analysisRepository: AnalysisRepository,
     private val asyncAnalysisService: AsyncAnalysisService,
     private val objectMapper: ObjectMapper,
 ) {
@@ -87,8 +90,14 @@ class UploadDocsService(
         val doc = uploadDocsRepository.findById(docId)
             .orElseThrow { IllegalArgumentException("문서를 찾을 수 없습니다: $docId") }
 
-        val analysis = doc.analysisJson?.let {
-            objectMapper.readValue(it, AnalysisResult::class.java)
+        val analysis = analysisRepository.findById(docId).orElse(null)?.let { a ->
+            val details = objectMapper.readValue(a.analysisDetail, Array<AnalysisDetailItem>::class.java).toList()
+            AnalysisResult(
+                summary = a.summary,
+                pros_summary = a.prosSummary,
+                analysis_detail = details,
+                analyzed_at = a.createdAt.toString(),
+            )
         }
 
         return AnalyzeDocsResponse(
