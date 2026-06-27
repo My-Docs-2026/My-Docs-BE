@@ -5,7 +5,7 @@ import com.example.mydocsbe.docs.dto.request.AnalyzeDocsRequest
 import com.example.mydocsbe.docs.dto.response.AnalysisDetailItem
 import com.example.mydocsbe.docs.dto.response.AnalysisResult
 import com.example.mydocsbe.docs.dto.response.AnalyzeDocsResponse
-import com.fasterxml.jackson.databind.ObjectMapper
+import tools.jackson.databind.ObjectMapper
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.MediaType
 import org.springframework.stereotype.Service
