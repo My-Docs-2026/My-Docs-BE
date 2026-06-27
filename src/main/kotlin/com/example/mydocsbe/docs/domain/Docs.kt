@@ -33,6 +33,8 @@ class Docs(
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     var status: DocumentStatus,
+    @Column(name = "analysis_json", columnDefinition = "TEXT")
+    var analysisJson: String? = null,
     @Column(name = "created_at", nullable = false)
     val createdAt: Instant = Instant.now(),
 )

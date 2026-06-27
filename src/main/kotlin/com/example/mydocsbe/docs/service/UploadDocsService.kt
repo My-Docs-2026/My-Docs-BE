@@ -5,11 +5,14 @@ import com.example.mydocsbe.docs.domain.enum.DocumentStatus
 import com.example.mydocsbe.docs.domain.enum.DocumentType
 import com.example.mydocsbe.docs.dto.request.AnalyzeDocsRequest
 import com.example.mydocsbe.docs.dto.request.UploadDocsRequest
+import com.example.mydocsbe.docs.dto.response.AnalysisResult
 import com.example.mydocsbe.docs.dto.response.AnalyzeDocsResponse
+import com.example.mydocsbe.docs.dto.response.DocsStatusResponse
+import com.example.mydocsbe.docs.dto.response.UploadDocsResponse
 import com.example.mydocsbe.docs.repository.UploadDocsRepository
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.stereotype.Service
-import org.springframework.transaction.annotation.Transactional
+import tools.jackson.databind.ObjectMapper
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.util.UUID
@@ -17,10 +20,10 @@ import java.util.UUID
 @Service
 class UploadDocsService(
     private val uploadDocsRepository: UploadDocsRepository,
-    private val analyzeDocsService: AnalyzeDocsService,
+    private val asyncAnalysisService: AsyncAnalysisService,
+    private val objectMapper: ObjectMapper,
 ) {
-    @Transactional
-    fun uploadDocs(req: UploadDocsRequest): AnalyzeDocsResponse {
+    fun uploadDocs(req: UploadDocsRequest): UploadDocsResponse {
         val title =
             req.title?.takeIf { it.isNotBlank() }
                 ?: "DOCS_${LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd_HHmmss"))}"
@@ -53,7 +56,8 @@ class UploadDocsService(
             ),
         )
 
-        val result = analyzeDocsService.analyze(
+        asyncAnalysisService.analyzeAndStore(
+            doc.id,
             AnalyzeDocsRequest(
                 documentId = doc.id,
                 title = doc.title,
@@ -63,7 +67,38 @@ class UploadDocsService(
             ),
         )
 
-        doc.status = DocumentStatus.COMPLETED
-        return result
+        return UploadDocsResponse(
+            document_id = doc.id,
+            title = doc.title,
+            type = doc.type.name.lowercase(),
+            file_url = doc.fileUrl,
+            status = doc.status.name,
+            created_at = doc.createdAt.toString(),
+        )
+    }
+
+    fun getStatus(docId: String): DocsStatusResponse {
+        val doc = uploadDocsRepository.findById(docId)
+            .orElseThrow { IllegalArgumentException("문서를 찾을 수 없습니다: $docId") }
+        return DocsStatusResponse(document_id = doc.id, status = doc.status.name)
+    }
+
+    fun getAnalysis(docId: String): AnalyzeDocsResponse {
+        val doc = uploadDocsRepository.findById(docId)
+            .orElseThrow { IllegalArgumentException("문서를 찾을 수 없습니다: $docId") }
+
+        val analysis = doc.analysisJson?.let {
+            objectMapper.readValue(it, AnalysisResult::class.java)
+        }
+
+        return AnalyzeDocsResponse(
+            document_id = doc.id,
+            title = doc.title,
+            type = doc.type.name.lowercase(),
+            file_url = doc.fileUrl,
+            status = doc.status.name,
+            created_at = doc.createdAt.toString(),
+            analysis = analysis,
+        )
     }
 }

@@ -7,7 +7,7 @@ data class AnalyzeDocsResponse(
     val file_url: String?,
     val status: String,
     val created_at: String,
-    val analysis: AnalysisResult,
+    val analysis: AnalysisResult?,
 )
 
 data class AnalysisResult(
