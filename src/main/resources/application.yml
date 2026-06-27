@@ -34,3 +34,6 @@ cloudflare:
     secret-access-key: ${R2_SECRET_ACCESS_KEY}
     bucket: ${R2_BUCKET}
     public-url: ${R2_PUBLIC_URL}
+
+anthropic:
+  api-key: ${ANTHROPIC_API_KEY}
