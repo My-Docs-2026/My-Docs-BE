@@ -30,8 +30,8 @@ class AsyncAnalysisService(
                 Analysis(
                     id = docId,
                     summary = analysis.summary,
-                    prosSummary = analysis.pros_summary,
-                    analysisDetail = objectMapper.writeValueAsString(analysis.analysis_detail),
+                    prosSummary = analysis.prosSummary,
+                    analysisDetail = objectMapper.writeValueAsString(analysis.analysisDetail),
                 ),
             )
 

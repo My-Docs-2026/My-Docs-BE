@@ -82,24 +82,24 @@ class AnalyzeDocsService(
         val claudeResult = objectMapper.readValue(cleaned, ClaudeAnalysisResult::class.java)
 
         return AnalyzeDocsResponse(
-            document_id = request.documentId,
+            documentId = request.documentId,
             title = request.title,
             type = request.type.name.lowercase(),
-            file_url = request.fileUrl,
+            fileUrl = request.fileUrl,
             status = "COMPLETED",
-            created_at = Instant.now().toString(),
+            createdAt = Instant.now().toString(),
             analysis = AnalysisResult(
                 summary = claudeResult.summary,
-                pros_summary = claudeResult.pros_summary,
-                analysis_detail = claudeResult.risks.map { risk ->
+                prosSummary = claudeResult.pros_summary,
+                analysisDetail = claudeResult.risks.map { risk ->
                     AnalysisDetailItem(
-                        risk_level = severityMap[risk.severity] ?: "Low",
-                        clause_title = risk.title,
-                        original_text = risk.summary,
+                        riskLevel = severityMap[risk.severity] ?: "Low",
+                        clauseTitle = risk.title,
+                        originalText = risk.summary,
                         warning = risk.reason,
                     )
                 },
-                analyzed_at = Instant.now().toString(),
+                analyzedAt = Instant.now().toString(),
             ),
         )
     }

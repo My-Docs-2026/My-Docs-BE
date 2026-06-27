@@ -1,6 +1,8 @@
 spring:
   profiles:
     active: local  # 기본값, 서버 배포 시 prod로 교체
+  jackson:
+    property-naming-strategy: SNAKE_CASE
   autoconfigure:
     exclude: org.springframework.boot.autoconfigure.security.oauth2.client.OAuth2ClientAutoConfiguration
   jpa:

@@ -37,13 +37,13 @@ class UploadDocsService(
 
         val fileUrl =
             when (req.type) {
-                DocumentType.FILE -> req.file_url ?: throw IllegalArgumentException("FILE 타입은 file_url이 필요합니다.")
+                DocumentType.FILE -> req.fileUrl ?: throw IllegalArgumentException("FILE 타입은 fileUrl이 필요합니다.")
                 DocumentType.TEXT -> null
             }
 
         val rawText =
             when (req.type) {
-                DocumentType.TEXT -> req.raw_text ?: throw IllegalArgumentException("TEXT 타입은 raw_text가 필요합니다.")
+                DocumentType.TEXT -> req.rawText ?: throw IllegalArgumentException("TEXT 타입은 rawText가 필요합니다.")
                 DocumentType.FILE -> null
             }
 
@@ -71,19 +71,19 @@ class UploadDocsService(
         )
 
         return UploadDocsResponse(
-            document_id = doc.id,
+            documentId = doc.id,
             title = doc.title,
             type = doc.type.name.lowercase(),
-            file_url = doc.fileUrl,
+            fileUrl = doc.fileUrl,
             status = doc.status.name,
-            created_at = doc.createdAt.toString(),
+            createdAt = doc.createdAt.toString(),
         )
     }
 
     fun getStatus(docId: String): DocsStatusResponse {
         val doc = uploadDocsRepository.findById(docId)
             .orElseThrow { IllegalArgumentException("문서를 찾을 수 없습니다: $docId") }
-        return DocsStatusResponse(document_id = doc.id, status = doc.status.name)
+        return DocsStatusResponse(documentId = doc.id, status = doc.status.name)
     }
 
     fun getAnalysis(docId: String): AnalyzeDocsResponse {
@@ -94,19 +94,19 @@ class UploadDocsService(
             val details = objectMapper.readValue(a.analysisDetail, Array<AnalysisDetailItem>::class.java).toList()
             AnalysisResult(
                 summary = a.summary,
-                pros_summary = a.prosSummary,
-                analysis_detail = details,
-                analyzed_at = a.createdAt.toString(),
+                prosSummary = a.prosSummary,
+                analysisDetail = details,
+                analyzedAt = a.createdAt.toString(),
             )
         }
 
         return AnalyzeDocsResponse(
-            document_id = doc.id,
+            documentId = doc.id,
             title = doc.title,
             type = doc.type.name.lowercase(),
-            file_url = doc.fileUrl,
+            fileUrl = doc.fileUrl,
             status = doc.status.name,
-            created_at = doc.createdAt.toString(),
+            createdAt = doc.createdAt.toString(),
             analysis = analysis,
         )
     }
