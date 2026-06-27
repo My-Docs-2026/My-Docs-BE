@@ -30,8 +30,9 @@ class SecurityConfig(
                     "/swagger-ui/**",
                     "/swagger-ui.html",
                     "/v3/api-docs/**",
-                    "/api/users/register",
-                    "/api/users/verify-email",
+                    "/api/v1/users/register",
+                    "/api/v1/users/verify-email",
+                    "/api/v1/users/signup",
                 ).permitAll()
                 it.anyRequest().permitAll() // TODO: 인증 적용 시 교체
             }

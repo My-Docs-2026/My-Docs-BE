@@ -18,6 +18,8 @@ class EmailVerification(
     var code: String,
     @Column(name = "expires_at", nullable = false)
     var expiresAt: Instant,
+    @Column(nullable = false)
+    var verified: Boolean = false,
     @Column(name = "created_at", nullable = false)
     var createdAt: Instant = Instant.now(),
 )

@@ -3,6 +3,7 @@ package com.example.mydocsbe.user.service
 import com.example.mydocsbe.user.domain.EmailVerification
 import com.example.mydocsbe.user.domain.User
 import com.example.mydocsbe.user.dto.request.RegisterRequest
+import com.example.mydocsbe.user.dto.request.SignUpRequest
 import com.example.mydocsbe.user.dto.request.VerifyEmailRequest
 import com.example.mydocsbe.user.repository.EmailVerificationRepository
 import com.example.mydocsbe.user.repository.UserRepository
@@ -22,21 +23,6 @@ class UserService(
 ) {
     @Transactional
     fun register(request: RegisterRequest) {
-        val existing = userRepository.findByEmail(request.email)
-        if (existing != null && existing.emailVerified) {
-            throw IllegalStateException("이미 사용 중인 이메일입니다.")
-        }
-
-        if (existing == null) {
-            userRepository.save(
-                User(
-                    id = UUID.randomUUID().toString(),
-                    email = request.email,
-                    password = passwordEncoder.encode(request.password)!!,
-                ),
-            )
-        }
-
         emailVerificationRepository.deleteByEmail(request.email)
 
         val code = "%06d".format(Random.nextInt(1_000_000))
@@ -62,11 +48,28 @@ class UserService(
             throw IllegalArgumentException("만료된 인증 코드입니다. 다시 요청해주세요.")
         }
 
-        val user =
-            userRepository.findByEmail(request.email)
-                ?: throw IllegalStateException("사용자를 찾을 수 없습니다.")
+        verification.verified = true
+    }
 
-        user.emailVerified = true
+    @Transactional
+    fun signUp(request: SignUpRequest) {
+        val verification =
+            emailVerificationRepository.findByEmailAndVerified(request.email, true)
+                ?: throw IllegalStateException("이메일 인증이 완료되지 않았습니다.")
+
+        if (userRepository.findByEmail(request.email) != null) {
+            throw IllegalStateException("이미 사용 중인 이메일입니다.")
+        }
+
+        userRepository.save(
+            User(
+                id = UUID.randomUUID().toString(),
+                email = request.email,
+                password = passwordEncoder.encode(request.password)!!,
+                emailVerified = true,
+            ),
+        )
+
         emailVerificationRepository.delete(verification)
     }
 }
