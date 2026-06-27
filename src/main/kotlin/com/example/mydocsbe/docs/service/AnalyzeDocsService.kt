@@ -5,11 +5,13 @@ import com.example.mydocsbe.docs.dto.request.AnalyzeDocsRequest
 import com.example.mydocsbe.docs.dto.response.AnalysisDetailItem
 import com.example.mydocsbe.docs.dto.response.AnalysisResult
 import com.example.mydocsbe.docs.dto.response.AnalyzeDocsResponse
-import tools.jackson.databind.ObjectMapper
 import org.springframework.beans.factory.annotation.Value
-import org.springframework.http.MediaType
 import org.springframework.stereotype.Service
-import org.springframework.web.client.RestClient
+import tools.jackson.databind.ObjectMapper
+import java.net.URI
+import java.net.http.HttpClient
+import java.net.http.HttpRequest
+import java.net.http.HttpResponse
 import java.time.Instant
 import java.util.Base64
 
@@ -33,9 +35,9 @@ private data class ClaudeRisk(
 class AnalyzeDocsService(
     @Value("\${anthropic.api-key}") private val apiKey: String,
     private val objectMapper: ObjectMapper,
-    restClientBuilder: RestClient.Builder,
 ) {
     private val severityMap = mapOf("상" to "High", "중" to "Medium", "하" to "Low")
+    private val httpClient: HttpClient = HttpClient.newHttpClient()
 
     private val systemPrompt = """
         당신은 금융 상품 설명서를 분석하는 전문가입니다.
@@ -58,12 +60,6 @@ class AnalyzeDocsService(
         }
     """.trimIndent()
 
-    private val claudeClient: RestClient = restClientBuilder
-        .baseUrl("https://api.anthropic.com")
-        .defaultHeader("x-api-key", apiKey)
-        .defaultHeader("anthropic-version", "2023-06-01")
-        .build()
-
     fun analyze(request: AnalyzeDocsRequest): AnalyzeDocsResponse {
         val messageContent = buildMessageContent(request)
 
@@ -74,13 +70,8 @@ class AnalyzeDocsService(
             "messages" to listOf(mapOf("role" to "user", "content" to messageContent)),
         )
 
-        val claudeResponse = claudeClient.post()
-            .uri("/v1/messages")
-            .contentType(MediaType.APPLICATION_JSON)
-            .body(requestBody)
-            .retrieve()
-            .body(ClaudeApiResponse::class.java)
-            ?: throw RuntimeException("Claude API 응답 없음")
+        val responseBody = callClaudeApi(objectMapper.writeValueAsString(requestBody))
+        val claudeResponse = objectMapper.readValue(responseBody, ClaudeApiResponse::class.java)
 
         val rawText = claudeResponse.content
             .filter { it.type == "text" }
@@ -113,6 +104,22 @@ class AnalyzeDocsService(
         )
     }
 
+    private fun callClaudeApi(body: String): String {
+        val request = HttpRequest.newBuilder()
+            .uri(URI.create("https://api.anthropic.com/v1/messages"))
+            .header("Content-Type", "application/json")
+            .header("x-api-key", apiKey)
+            .header("anthropic-version", "2023-06-01")
+            .POST(HttpRequest.BodyPublishers.ofString(body))
+            .build()
+
+        val response = httpClient.send(request, HttpResponse.BodyHandlers.ofString())
+        if (response.statusCode() !in 200..299) {
+            throw RuntimeException("Claude API 오류 (${response.statusCode()}): ${response.body()}")
+        }
+        return response.body()
+    }
+
     private fun buildMessageContent(request: AnalyzeDocsRequest): List<Map<String, Any>> =
         when (request.type) {
             DocumentType.FILE -> {
@@ -138,5 +145,5 @@ class AnalyzeDocsService(
         }
 
     private fun downloadFile(url: String): ByteArray =
-        java.net.URI(url).toURL().openStream().use { it.readBytes() }
+        URI(url).toURL().openStream().use { it.readBytes() }
 }
