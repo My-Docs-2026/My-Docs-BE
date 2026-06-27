@@ -12,6 +12,7 @@ import com.example.mydocsbe.docs.dto.response.DocsStatusResponse
 import com.example.mydocsbe.docs.dto.response.UploadDocsResponse
 import com.example.mydocsbe.docs.repository.AnalysisRepository
 import com.example.mydocsbe.docs.repository.UploadDocsRepository
+import com.example.mydocsbe.user.repository.UserRepository
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.stereotype.Service
 import tools.jackson.databind.ObjectMapper
@@ -25,15 +26,19 @@ class UploadDocsService(
     private val analysisRepository: AnalysisRepository,
     private val asyncAnalysisService: AsyncAnalysisService,
     private val objectMapper: ObjectMapper,
+    private val userRepository: UserRepository,
 ) {
     fun uploadDocs(req: UploadDocsRequest): UploadDocsResponse {
         val title =
             req.title?.takeIf { it.isNotBlank() }
                 ?: "DOCS_${LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd_HHmmss"))}"
 
-        val userId =
+        val email =
             SecurityContextHolder.getContext().authentication?.name
                 ?: throw IllegalStateException("인증 정보가 없습니다.")
+
+        val userId = userRepository.findByEmail(email)?.id
+            ?: throw IllegalStateException("유저를 찾을 수 없습니다: $email")
 
         val fileUrl =
             when (req.type) {
@@ -47,9 +52,10 @@ class UploadDocsService(
                 DocumentType.FILE -> null
             }
 
+        val docId = UUID.randomUUID()
         val doc = uploadDocsRepository.save(
             Docs(
-                id = UUID.randomUUID().toString(),
+                id = docId,
                 userId = userId,
                 title = title,
                 type = req.type,
@@ -62,7 +68,7 @@ class UploadDocsService(
         asyncAnalysisService.analyzeAndStore(
             doc.id,
             AnalyzeDocsRequest(
-                documentId = doc.id,
+                documentId = doc.id.toString(),
                 title = doc.title,
                 type = doc.type,
                 fileUrl = doc.fileUrl,
@@ -71,7 +77,7 @@ class UploadDocsService(
         )
 
         return UploadDocsResponse(
-            documentId = doc.id,
+            documentId = doc.id.toString(),
             title = doc.title,
             type = doc.type.name.lowercase(),
             fileUrl = doc.fileUrl,
@@ -81,16 +87,16 @@ class UploadDocsService(
     }
 
     fun getStatus(docId: String): DocsStatusResponse {
-        val doc = uploadDocsRepository.findById(docId)
+        val doc = uploadDocsRepository.findById(UUID.fromString(docId))
             .orElseThrow { IllegalArgumentException("문서를 찾을 수 없습니다: $docId") }
-        return DocsStatusResponse(documentId = doc.id, status = doc.status.name)
+        return DocsStatusResponse(documentId = doc.id.toString(), status = doc.status.name)
     }
 
     fun getAnalysis(docId: String): AnalyzeDocsResponse {
-        val doc = uploadDocsRepository.findById(docId)
+        val doc = uploadDocsRepository.findById(UUID.fromString(docId))
             .orElseThrow { IllegalArgumentException("문서를 찾을 수 없습니다: $docId") }
 
-        val analysis = analysisRepository.findById(docId).orElse(null)?.let { a ->
+        val analysis = analysisRepository.findById(UUID.fromString(docId)).orElse(null)?.let { a ->
             val details = objectMapper.readValue(a.analysisDetail, Array<AnalysisDetailItem>::class.java).toList()
             AnalysisResult(
                 summary = a.summary,
@@ -101,7 +107,7 @@ class UploadDocsService(
         }
 
         return AnalyzeDocsResponse(
-            documentId = doc.id,
+            documentId = doc.id.toString(),
             title = doc.title,
             type = doc.type.name.lowercase(),
             fileUrl = doc.fileUrl,
