@@ -3,20 +3,22 @@ package com.example.mydocsbe.docs.domain
 import com.example.mydocsbe.docs.domain.enum.DocumentStatus
 import com.example.mydocsbe.docs.domain.enum.DocumentType
 import jakarta.persistence.*
+import org.hibernate.annotations.ColumnTransformer
 import java.time.Instant
+import java.util.UUID
 
 @Entity
 @Table(name = "document")
 class Docs(
     @Id
-    @Column(columnDefinition = "uuid")
-    val id: String,
-    @Column(name = "user_id", nullable = false, columnDefinition = "uuid")
+    val id: UUID,
+    @Column(name = "user_id", nullable = false)
     val userId: String,
     @Column(nullable = false)
     val title: String,
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
+    @ColumnTransformer(read = "upper(type::text)", write = "lower(?)::document_type")
+    @Column(nullable = false, columnDefinition = "document_type")
     val type: DocumentType,
     @Column(name = "file_url")
     val fileUrl: String? = null,
@@ -31,7 +33,8 @@ class Docs(
     @Column(name = "raw_text", columnDefinition = "TEXT")
     val rawText: String? = null,
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
+    @ColumnTransformer(read = "upper(status::text)", write = "lower(?)::status_type")
+    @Column(nullable = false, columnDefinition = "status_type")
     var status: DocumentStatus,
     @Column(name = "created_at", nullable = false)
     val createdAt: Instant = Instant.now(),

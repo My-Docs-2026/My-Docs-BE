@@ -1,6 +1,8 @@
 spring:
   profiles:
     active: local  # 기본값, 서버 배포 시 prod로 교체
+  jackson:
+    property-naming-strategy: SNAKE_CASE
   autoconfigure:
     exclude: org.springframework.boot.autoconfigure.security.oauth2.client.OAuth2ClientAutoConfiguration
   jpa:
@@ -34,3 +36,6 @@ cloudflare:
     secret-access-key: ${R2_SECRET_ACCESS_KEY}
     bucket: ${R2_BUCKET}
     public-url: ${R2_PUBLIC_URL}
+
+anthropic:
+  api-key: ${ANTHROPIC_API_KEY}
