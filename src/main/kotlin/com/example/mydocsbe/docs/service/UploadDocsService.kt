@@ -8,6 +8,8 @@ import com.example.mydocsbe.docs.dto.request.UploadDocsRequest
 import com.example.mydocsbe.docs.dto.response.AnalysisDetailItem
 import com.example.mydocsbe.docs.dto.response.AnalysisResult
 import com.example.mydocsbe.docs.dto.response.AnalyzeDocsResponse
+import com.example.mydocsbe.docs.dto.response.DocsListItemResponse
+import com.example.mydocsbe.docs.dto.response.DocsListResponse
 import com.example.mydocsbe.docs.dto.response.DocsStatusResponse
 import com.example.mydocsbe.docs.dto.response.UploadDocsResponse
 import com.example.mydocsbe.docs.repository.AnalysisRepository
@@ -15,6 +17,8 @@ import com.example.mydocsbe.docs.repository.UploadDocsRepository
 import com.example.mydocsbe.user.repository.UserRepository
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.stereotype.Service
+import org.springframework.data.domain.PageRequest
+import org.springframework.data.domain.Sort
 import tools.jackson.databind.ObjectMapper
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
@@ -83,6 +87,39 @@ class UploadDocsService(
             fileUrl = doc.fileUrl,
             status = doc.status.name,
             createdAt = doc.createdAt.toString(),
+        )
+    }
+
+    fun getDocsList(pageNumber: Int, pageSize: Int, sort: String): DocsListResponse {
+        val email = SecurityContextHolder.getContext().authentication?.name
+            ?: throw IllegalStateException("인증 정보가 없습니다.")
+        val userId = userRepository.findByEmail(email)?.id
+            ?: throw IllegalStateException("유저를 찾을 수 없습니다: $email")
+
+        val sorting = when (sort) {
+            "title" -> Sort.by(Sort.Direction.ASC, "title")
+            else -> Sort.by(Sort.Direction.DESC, "createdAt")
+        }
+        val page = uploadDocsRepository.findByUserId(
+            userId,
+            PageRequest.of(pageNumber, pageSize, sorting),
+        )
+        val content = page.content.map { doc ->
+            val summary = analysisRepository.findById(doc.id).orElse(null)?.summary
+            DocsListItemResponse(
+                documentId = doc.id.toString(),
+                title = doc.title,
+                status = doc.status.name,
+                createdAt = doc.createdAt.toString(),
+                summary = summary,
+            )
+        }
+        return DocsListResponse(
+            content = content,
+            totalElements = page.totalElements,
+            totalPages = page.totalPages,
+            pageNumber = page.number,
+            pageSize = page.size,
         )
     }
 
