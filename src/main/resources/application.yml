@@ -25,6 +25,10 @@ spring:
             enable: true
             required: true
 
+logging:
+  level:
+    com.example.mydocsbe.auth: DEBUG
+
 jwt:
   secret: ${JWT_SECRET:7U9wb1goX0f24PVR7eid394FGk0v+VHlqUFP8ydJwrM=}
   expiration: 86400000  # 24시간 (ms)
