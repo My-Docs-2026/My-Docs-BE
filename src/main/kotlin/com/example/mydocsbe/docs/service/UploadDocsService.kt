@@ -123,6 +123,52 @@ class UploadDocsService(
         )
     }
 
+    fun deleteDoc(docId: String) {
+        val email = SecurityContextHolder.getContext().authentication?.name
+            ?: throw IllegalStateException("인증 정보가 없습니다.")
+        val userId = userRepository.findByEmail(email)?.id
+            ?: throw IllegalStateException("유저를 찾을 수 없습니다: $email")
+
+        val uuid = UUID.fromString(docId)
+        val doc = uploadDocsRepository.findById(uuid)
+            .orElseThrow { IllegalArgumentException("문서를 찾을 수 없습니다: $docId") }
+
+        if (doc.userId != userId) {
+            throw IllegalArgumentException("삭제 권한이 없습니다.")
+        }
+
+        analysisRepository.findById(uuid).ifPresent { analysisRepository.delete(it) }
+        uploadDocsRepository.delete(doc)
+    }
+
+    fun retryAnalysis(docId: String): DocsStatusResponse {
+        val uuid = UUID.fromString(docId)
+        val doc = uploadDocsRepository.findById(uuid)
+            .orElseThrow { IllegalArgumentException("문서를 찾을 수 없습니다: $docId") }
+
+        if (doc.status != DocumentStatus.FAILED) {
+            throw IllegalArgumentException("FAILED 상태인 문서만 재시도할 수 있습니다. 현재 상태: ${doc.status.name}")
+        }
+
+        analysisRepository.findById(uuid).ifPresent { analysisRepository.delete(it) }
+
+        doc.status = DocumentStatus.PENDING
+        uploadDocsRepository.save(doc)
+
+        asyncAnalysisService.analyzeAndStore(
+            uuid,
+            AnalyzeDocsRequest(
+                documentId = docId,
+                title = doc.title,
+                type = doc.type,
+                fileUrl = doc.fileUrl,
+                rawText = doc.rawText,
+            ),
+        )
+
+        return DocsStatusResponse(documentId = docId, status = DocumentStatus.PENDING.name)
+    }
+
     fun getStatus(docId: String): DocsStatusResponse {
         val doc = uploadDocsRepository.findById(UUID.fromString(docId))
             .orElseThrow { IllegalArgumentException("문서를 찾을 수 없습니다: $docId") }
