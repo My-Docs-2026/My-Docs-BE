@@ -9,6 +9,7 @@ import com.example.mydocsbe.docs.dto.response.AnalysisDetailItem
 import com.example.mydocsbe.docs.dto.response.AnalysisResult
 import com.example.mydocsbe.docs.dto.response.AnalyzeDocsResponse
 import com.example.mydocsbe.docs.dto.response.DocsListItemResponse
+import com.example.mydocsbe.docs.dto.response.OriginDocResponse
 import com.example.mydocsbe.docs.dto.response.DocsListResponse
 import com.example.mydocsbe.docs.dto.response.DocsStatusResponse
 import com.example.mydocsbe.docs.dto.response.UploadDocsResponse
@@ -167,6 +168,21 @@ class UploadDocsService(
         )
 
         return DocsStatusResponse(documentId = docId, status = DocumentStatus.PENDING.name)
+    }
+
+    fun getOriginDoc(docId: String): OriginDocResponse {
+        val doc = uploadDocsRepository.findById(UUID.fromString(docId))
+            .orElseThrow { IllegalArgumentException("문서를 찾을 수 없습니다: $docId") }
+        return OriginDocResponse(
+            documentId = doc.id.toString(),
+            title = doc.title,
+            type = doc.type.name.lowercase(),
+            fileUrl = doc.fileUrl,
+            fileName = doc.fileName,
+            fileSize = doc.fileSize,
+            mimeType = doc.mimeType,
+            rawText = doc.rawText,
+        )
     }
 
     fun getStatus(docId: String): DocsStatusResponse {
