@@ -29,6 +29,7 @@ private data class ClaudeRisk(
     val severity: String,
     val summary: String,
     val reason: String,
+    val page_number: Int?,
 )
 
 @Service
@@ -54,10 +55,12 @@ class AnalyzeDocsService(
               "title": "제목",
               "severity": "상|중|하",
               "summary": "요약",
-              "reason": "위험 혹은 중요한 이유"
+              "reason": "위험 혹은 중요한 이유",
+              "page_number": 3
             }
           ]
         }
+        page_number는 해당 조항 또는 내용이 문서에서 실제로 위치한 페이지 번호(1부터 시작)입니다. 페이지를 특정할 수 없으면 null로 반환하세요.
     """.trimIndent()
 
     fun analyze(request: AnalyzeDocsRequest): AnalyzeDocsResponse {
@@ -97,6 +100,7 @@ class AnalyzeDocsService(
                         clauseTitle = risk.title,
                         originalText = risk.summary,
                         warning = risk.reason,
+                        pageNumber = risk.page_number,
                     )
                 },
                 analyzedAt = Instant.now().toString(),

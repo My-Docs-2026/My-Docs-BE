@@ -22,4 +22,5 @@ data class AnalysisDetailItem(
     val clauseTitle: String,
     val originalText: String,
     val warning: String,
+    val pageNumber: Int?,
 )

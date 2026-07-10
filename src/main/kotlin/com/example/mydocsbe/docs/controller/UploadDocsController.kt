@@ -2,6 +2,7 @@ package com.example.mydocsbe.docs.controller
 
 import com.example.mydocsbe.docs.dto.request.UploadDocsRequest
 import com.example.mydocsbe.docs.dto.response.AnalyzeDocsResponse
+import com.example.mydocsbe.docs.dto.response.OriginDocResponse
 import com.example.mydocsbe.docs.dto.response.DocsListResponse
 import com.example.mydocsbe.docs.dto.response.DocsStatusResponse
 import com.example.mydocsbe.docs.dto.response.UploadDocsResponse
@@ -49,6 +50,11 @@ class UploadDocsController(
     fun getStatus(
         @PathVariable id: String,
     ): DocsStatusResponse = uploadDocsService.getStatus(id)
+
+    @GetMapping("/{id}/origin")
+    fun getOriginDoc(
+        @PathVariable id: String,
+    ): OriginDocResponse = uploadDocsService.getOriginDoc(id)
 
     @GetMapping("/{id}")
     fun getAnalysis(
